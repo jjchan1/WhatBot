@@ -2,44 +2,51 @@
 # Credit: u/busterino
 
 import praw
-import config
 import time
 import os
 
+
 # authenticate bot
-def login():
-    reddit = praw.Reddit(
-        username = config.username,
-        password = config.password,
-        client_id = config.client_id,
-        client_secret = config.client_secret,
-        user_agent = "u/jjchan1's WhatBot v0.1")
-    print "Logged in."
+def authenticate():
+    print("Authenticating...")
+    reddit = praw.Reddit('WhatBot', user_agent="u/jjchan1's WhatBot v0.1")
+    print("Authenticated as {}\n".format(reddit.user.me()))
 
     return reddit
 
+
+# main
+def main():
+    reddit = authenticate()
+    comments_replied = get_comments_replied()
+    while True:
+        run_what_bot(reddit, comments_replied)
+
+
 # run bot
-def run(reddit, comments_replied):
+def run_what_bot(reddit, comments_replied):
     # for the first n=100 comments, check to see if the comment is what/wat/wut/wot
     # if yes, reply to comment with a picture of the what girl
     for comment in reddit.subreddit('test').comments(limit=100):
         if ("what" == comment.body.lower() or
-         "wat" == comment.body.lower() or
-          "wut" == comment.body.lower() or
-          "wot" == comment.body.lower()) and  comment.id not in comments_replied:
+            "wat" == comment.body.lower() or
+            "wut" == comment.body.lower() or
+            "wot" == comment.body.lower() and
+            comment.id not in comments_replied):
             comment.reply("[What...](http://i.imgur.com/hQpkcKh.jpg)")
 
             # add comment.id to list of comments already replied to to prevent spamming
             comments_replied.append(comment.id)
 
             # update txt file with new commend.id
-            with open ("comments_replied.txt", "a") as file:
+            with open("comments_replied.txt", "a") as file:
                 file.write(comment.id + "\n")
-            print "Replied to comment " + comment.id
+            print("Replied to comment " + comment.id)
 
     # sleep to prevent overcommenting
     time.sleep(10)
-    print "Sleeping..."
+    print("Sleeping...")
+
 
 # search OS list of previously replied comments
 def get_comments_replied():
@@ -54,7 +61,6 @@ def get_comments_replied():
 
     return comments_replied
 
-reddit = login()
-comments_replied = get_comments_replied()
-while True:
-    run(reddit, comments_replied)
+
+if __name__ == '__main__':
+    main()
