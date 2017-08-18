@@ -15,6 +15,20 @@ def authenticate():
     return reddit
 
 
+# search OS list of previously replied comments
+def get_comments_replied():
+    # if no such list exists, make a new file and list
+    if not os.path.isfile("comments_replied.txt"):
+        comments_replied = []
+    else:
+        with open("comments_replied.txt", "r") as file:
+            comments_replied = file.read()
+            comments_replied = comments_replied.split("\n")
+            comments_replied = filter(None, comments_replied)
+
+    return comments_replied
+
+
 # main
 def main():
     reddit = authenticate()
@@ -46,20 +60,6 @@ def run_what_bot(reddit, comments_replied):
     # sleep to prevent overcommenting
     time.sleep(10)
     print("Sleeping...")
-
-
-# search OS list of previously replied comments
-def get_comments_replied():
-    # if no such list exists, make a new file and list
-    if not os.path.isfile("comments_replied.txt"):
-        comments_replied = []
-    else:
-        with open("comments_replied.txt", "r") as file:
-            comments_replied = file.read()
-            comments_replied = comments_replied.split("\n")
-            comments_replied = filter(None, comments_replied)
-
-    return comments_replied
 
 
 if __name__ == '__main__':
